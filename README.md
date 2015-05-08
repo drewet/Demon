@@ -1,7 +1,7 @@
 Quick proof of concept for http://www.cs.columbia.edu/~mikepo/papers/gpukeylogger.eurosec13.pdf
 
 Objective:
-- Undetection, our jellyfish rootkit utilized a common LD_PRELOAD technique to hide in userland. For Demon we're going with code
+- Undetection. Our jellyfish rootkit utilized a common LD_PRELOAD technique to hide in userland. For Demon we're going with code
 injection.
 
 Disclaimer: 
