@@ -9,7 +9,7 @@ Disclaimer:
 
 PLEASE READ:
 - For some arbitrary reason this project as well as jellyfish, has been getting a decent amount of attention. That being said, we just
-want to notify everyone reading this that Demon is not complete nor has it even reached the expectations we wanted it to. We're 
+want to notify everyone reading this that Demon is not complete nor has it even reached the expectations we wanted it to yet. We're 
 still circling around ideas and pseudo code upon what we think is cool, so apologies to anyone disappointed that they still have
 a buggy still-in-beta application. Our goal was to make everyone AWARE that gpu based malware IS REAL; and obviously, telling
 from what's been publicized, we succeeded.
