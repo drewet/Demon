@@ -33,8 +33,6 @@ struct jellyfish{
     cl_kernel kernel;
 };
 
-typedef struct jellyfish *jelly;
-
 // globals
 char **buffer, **buffer2;
 cl_mem in, out;
