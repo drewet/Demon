@@ -14,8 +14,8 @@ GNU General Public License for more details.
  
 */
 
-#ifndef DEMON_H
-#define DEMON_H
+#ifndef __DEMON_H__
+#define __DEMON_H__
 
 #include <CL/cl.h>
 
@@ -33,8 +33,9 @@ struct jellyfish{
     cl_kernel kernel;
 };
 
+struct jellyfish *jelly;
+
 // globals
-char **buffer, **buffer2;
 cl_mem in, out;
 cl_int err;
 size_t global_size = 2;
