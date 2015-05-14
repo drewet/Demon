@@ -26,3 +26,4 @@ Disclaimer:
 
 Heads up:
 - Windows GPU remote access tool (RAT) PoC official release @ /WIN_JELLY
+- Working on PoC for Mac OS X @ /MAC_JELLY
