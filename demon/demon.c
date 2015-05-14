@@ -12,8 +12,6 @@
 /* Get GPU device */
 cl_device_id create_device(){
     /* Check Platform */
-    struct jellyfish *jelly = NULL;
-
     err = clGetPlatformIDs(1, &jelly->platform, NULL);
     if(err < 0){
         perror("Couldn't identify platform");
@@ -32,8 +30,6 @@ cl_device_id create_device(){
 
 /* Create program from a file (demon.cl) then compile */
 cl_program build_program(cl_context ctx, cl_device_id dev, const char *filename){
-    struct jellyfish *jelly = NULL;
-
     FILE *program_handle;
     char *program_buf, *program_log;
     size_t program_size, log_size;
@@ -77,7 +73,7 @@ cl_program build_program(cl_context ctx, cl_device_id dev, const char *filename)
 }
 
 int main(int argc, char **argv){
-    struct jellyfish *jelly = NULL;
+    char **buffer, **buffer2;
 
     FILE *f;
     f = fopen(keylog, "r");
@@ -107,6 +103,13 @@ int main(int argc, char **argv){
         perror("Couldn't create logging buffer"); 
         exit(1);
     };
+
+    /* host-device command queue */
+    jelly->cq = clCreateCommandQueue(jelly->ctx, jelly->dev, 0, &err);
+    if(err < 0){
+        perror("Couldn't create command queue");
+	exit(1);
+    }
 
     /* Create kernel */
     jelly->kernel = clCreateKernel(jelly->program, KERNEL_FUNC, &err);  // store_keys_gpu(..)
