@@ -29,7 +29,7 @@ cl_device_id create_device(){
 }
 
 /* Create program from a file (demon.cl) then compile */
-cl_program build_program(jelly->ctx, jelly->dev, const char *filename){
+cl_program build_program(cl_context ctx, cl_device_id dev, const char *filename){
     FILE *program_handle;
     char *program_buf, *program_log;
     size_t program_size, log_size;
@@ -73,6 +73,8 @@ cl_program build_program(jelly->ctx, jelly->dev, const char *filename){
 }
 
 int main(int argc, char **argv){
+    char **buffer, **buffer2;
+
     FILE *f;
     f = fopen(keylog, "r");
     fseek(f, 0, SEEK_SET);
@@ -102,12 +104,12 @@ int main(int argc, char **argv){
         exit(1);
     };
 
-    /* Create command queue */
+    /* host-device command queue */
     jelly->cq = clCreateCommandQueue(jelly->ctx, jelly->dev, 0, &err);
     if(err < 0){
         perror("Couldn't create command queue");
-        exit(1);
-    };
+	exit(1);
+    }
 
     /* Create kernel */
     jelly->kernel = clCreateKernel(jelly->program, KERNEL_FUNC, &err);  // store_keys_gpu(..)
